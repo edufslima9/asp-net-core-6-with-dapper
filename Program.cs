@@ -6,6 +6,7 @@ const string connectionString = "Server=localhost,1433;Database=balta;User ID=sa
 
 using (var connection = new SqlConnection(connectionString))
 {
+  //UpdateCategory(connection);
   ListCategories(connection);
   //CreateCategory(connection);
 }
@@ -54,4 +55,19 @@ var insertSql = @"INSERT INTO
     });
 
     Console.WriteLine($"{rows} linhas inseridas");
+}
+
+static void UpdateCategory(SqlConnection connection) {
+  var updateQuery = @"UPDATE [Category]
+    SET 
+      [Title]=@Title
+    WHERE
+      [Id]=@Id";
+  
+  var rows = connection.Execute(updateQuery, new {
+    Title = "Frontend 2022",
+    Id = new Guid("af3407aa-11ae-4621-a2ef-2028b85507c4")
+  });
+
+  Console.WriteLine($"{rows} registros atualizados");
 }
