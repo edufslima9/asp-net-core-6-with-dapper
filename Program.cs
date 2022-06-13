@@ -1,6 +1,7 @@
 ﻿using BaltaDataAccess.Models;
 using Dapper;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 const string connectionString = "Server=localhost,1433;Database=balta;User ID=sa;Password=1q2w3e4r@#$;Encrypt=False";
 
@@ -13,6 +14,7 @@ using (var connection = new SqlConnection(connectionString))
   //ListCategories(connection);
   //GetCategory(connection);
   //ExecuteProcedure(connection);
+  ExecuteReadProcedure(connection);
 }
 
 static void ListCategories(SqlConnection connection)
@@ -156,11 +158,24 @@ static void DeleteCategory(SqlConnection connection)
   Console.WriteLine($"{rows} registros excluídos");
 }
 
-static void ExecuteProcedure(SqlConnection connection) {
-  var sql = "[spDeleteStudent]";
+static void ExecuteProcedure(SqlConnection connection)
+{
+  var procedure = "[spDeleteStudent]";
   var pars = new { StudentId = "c78d389b-bbb4-4b60-bc5f-285487c1e952" };
 
-  var affectedRows = connection.Execute(sql, pars, commandType: System.Data.CommandType.StoredProcedure);
+  var affectedRows = connection.Execute(procedure, pars, commandType: CommandType.StoredProcedure);
 
   Console.WriteLine($"{affectedRows} linhas afetadas");
+}
+
+static void ExecuteReadProcedure(SqlConnection connection)
+{
+  var procedure = "[spGetCoursesByCategory]";
+  var pars = new { CategoryId = "09ce0b7b-cfca-497b-92c0-3290ad9d5142" };
+
+  var courses = connection.Query(procedure, pars, commandType: CommandType.StoredProcedure);
+
+  foreach (var item in courses) {
+    Console.WriteLine($"{item.Id} - {item.Title}");
+  }
 }
