@@ -10,8 +10,9 @@ using (var connection = new SqlConnection(connectionString))
   //CreateManyCategory(connection);
   //UpdateCategory(connection);
   //DeleteCategory(connection);
-  ListCategories(connection);
+  //ListCategories(connection);
   //GetCategory(connection);
+  //ExecuteProcedure(connection);
 }
 
 static void ListCategories(SqlConnection connection)
@@ -153,4 +154,13 @@ static void DeleteCategory(SqlConnection connection)
   });
 
   Console.WriteLine($"{rows} registros excluídos");
+}
+
+static void ExecuteProcedure(SqlConnection connection) {
+  var sql = "[spDeleteStudent]";
+  var pars = new { StudentId = "c78d389b-bbb4-4b60-bc5f-285487c1e952" };
+
+  var affectedRows = connection.Execute(sql, pars, commandType: System.Data.CommandType.StoredProcedure);
+
+  Console.WriteLine($"{affectedRows} linhas afetadas");
 }
