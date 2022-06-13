@@ -6,9 +6,10 @@ const string connectionString = "Server=localhost,1433;Database=balta;User ID=sa
 
 using (var connection = new SqlConnection(connectionString))
 {
-  //UpdateCategory(connection);
-  ListCategories(connection);
   //CreateCategory(connection);
+  //UpdateCategory(connection);
+  // DeleteCategory(connection);
+  ListCategories(connection);
 }
 
 static void ListCategories(SqlConnection connection)
@@ -57,7 +58,8 @@ var insertSql = @"INSERT INTO
     Console.WriteLine($"{rows} linhas inseridas");
 }
 
-static void UpdateCategory(SqlConnection connection) {
+static void UpdateCategory(SqlConnection connection)
+{
   var updateQuery = @"UPDATE [Category]
     SET 
       [Title]=@Title
@@ -70,4 +72,15 @@ static void UpdateCategory(SqlConnection connection) {
   });
 
   Console.WriteLine($"{rows} registros atualizados");
+}
+
+static void DeleteCategory(SqlConnection connection)
+{
+  var deleteQuery = "DELETE FROM [Category] WHERE [Id]=@Id";
+  
+  var rows = connection.Execute(deleteQuery, new {
+    Id = new Guid("af3407aa-11ae-4621-a2ef-2028b85507c4")
+  });
+
+  Console.WriteLine($"{rows} registros excluídos");
 }
