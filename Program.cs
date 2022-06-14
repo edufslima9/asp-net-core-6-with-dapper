@@ -16,7 +16,8 @@ using (var connection = new SqlConnection(connectionString))
   //ExecuteProcedure(connection);
   //ExecuteReadProcedure(connection);
   //ExecuteScalar(connection);
-  ReadView(connection);
+  //ReadView(connection);
+  OneToOne(connection);
 }
 
 static void ListCategories(SqlConnection connection)
@@ -227,5 +228,27 @@ static void ReadView(SqlConnection connection)
   foreach (var item in courses)
   {
     Console.WriteLine($"{item.Id} - {item.Title}");
+  }
+}
+
+static void OneToOne(SqlConnection connection)
+{
+  var sql = @"
+    SELECT
+      *
+    FROM
+      [CareerItem]
+    INNER JOIN
+      [Course] ON [CareerItem].[CourseId] = [Course].[Id]";
+
+  var items = connection.Query<CareerItem, Course, CareerItem>(
+    sql,
+    (careerItem, course) => {
+      careerItem.Course = course;
+      return careerItem;
+    }, splitOn: "Id");
+
+  foreach (var item in items) {
+    Console.WriteLine($"{item.Title} - Curso: {item.Course.Title}");
   }
 }
