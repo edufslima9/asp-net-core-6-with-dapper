@@ -14,7 +14,8 @@ using (var connection = new SqlConnection(connectionString))
   //ListCategories(connection);
   //GetCategory(connection);
   //ExecuteProcedure(connection);
-  ExecuteReadProcedure(connection);
+  //ExecuteReadProcedure(connection);
+  ExecuteScalar(connection);
 }
 
 static void ListCategories(SqlConnection connection)
@@ -178,4 +179,40 @@ static void ExecuteReadProcedure(SqlConnection connection)
   foreach (var item in courses) {
     Console.WriteLine($"{item.Id} - {item.Title}");
   }
+}
+
+static void ExecuteScalar(SqlConnection connection)
+{
+  var category = new Category {
+  Title = "Amazon AWS",
+  Url = "amazon",
+  Summary = "AWS Cloud",
+  Order = 8,
+  Description = "Categoria destinada a serviços do AWS",
+  Featured = false
+};
+
+var insertSql = @"INSERT INTO
+      [Category]
+    OUTPUT inserted.[Id]
+    VALUES (
+      NEWID(),
+      @Title,
+      @Url,
+      @Summary,
+      @Order,
+      @Description,
+      @Featured
+    )";
+
+  var id = connection.ExecuteScalar<Guid>(insertSql, new {
+      category.Title,
+      category.Url,
+      category.Summary,
+      category.Order,
+      category.Description,
+      category.Featured
+    });
+
+    Console.WriteLine($"A categoria inserida foi: {id}");
 }
