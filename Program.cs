@@ -17,7 +17,8 @@ using (var connection = new SqlConnection(connectionString))
   //ExecuteReadProcedure(connection);
   //ExecuteScalar(connection);
   //ReadView(connection);
-  OneToOne(connection);
+  //OneToOne(connection);
+  OneToMany(connection);
 }
 
 static void ListCategories(SqlConnection connection)
@@ -250,5 +251,48 @@ static void OneToOne(SqlConnection connection)
 
   foreach (var item in items) {
     Console.WriteLine($"{item.Title} - Curso: {item.Course.Title}");
+  }
+}
+
+static void OneToMany(SqlConnection connection)
+{
+  var sql = @"
+      SELECT
+        [Career].[Id],
+        [Career].[Title],
+        [CareerItem].[CareerId],
+        [CareerItem].[Title]
+      FROM
+        [Career]
+      INNER JOIN
+        [CareerItem] ON [CareerItem].[CareerId] = [Career].[Id]
+      ORDER BY
+        [Career].[Title]";
+
+  var careers = new List<Career>();
+  var items = connection.Query<Career, CareerItem, Career>(
+    sql,
+    (career, careerItem) =>
+    {
+      var getCareer = careers.Where(x => x.Id == career.Id).FirstOrDefault();
+      if (getCareer == null)
+      {
+        getCareer = career;
+        getCareer.CareerItems.Add(careerItem);
+        careers.Add(getCareer);
+      }
+      else
+      {
+        getCareer.CareerItems.Add(careerItem);
+      }
+      career.CareerItems.Add(careerItem);
+      return career;
+    }, splitOn: "CareerId");
+
+  foreach (var career in careers) {
+    Console.WriteLine($"{career.Title}");
+    foreach (var carrerItem in career.CareerItems) {
+      Console.WriteLine($" - {carrerItem.Title}");
+    }
   }
 }
