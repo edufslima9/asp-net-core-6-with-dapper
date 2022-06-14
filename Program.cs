@@ -15,7 +15,8 @@ using (var connection = new SqlConnection(connectionString))
   //GetCategory(connection);
   //ExecuteProcedure(connection);
   //ExecuteReadProcedure(connection);
-  ExecuteScalar(connection);
+  //ExecuteScalar(connection);
+  ReadView(connection);
 }
 
 static void ListCategories(SqlConnection connection)
@@ -215,4 +216,16 @@ var insertSql = @"INSERT INTO
     });
 
     Console.WriteLine($"A categoria inserida foi: {id}");
+}
+
+static void ReadView(SqlConnection connection)
+{
+
+  var sql = "SELECT * FROM [vwCourses]";
+
+  var courses = connection.Query(sql);
+  foreach (var item in courses)
+  {
+    Console.WriteLine($"{item.Id} - {item.Title}");
+  }
 }
